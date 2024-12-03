@@ -30,10 +30,15 @@ export function Todolist(props: PropsType) {
             setNewTaskTitle("");
         }
     }
+
     const addTask = () => {
-        props.addTask(newTaskTitle);
+        if (newTaskTitle.trim() === ""){
+            return newTaskTitle;
+        }
+        props.addTask(newTaskTitle.trim());
         setNewTaskTitle("");
     }
+
     const onAllClickHandler = () =>  props.changeFilter("all")
     const onActiveClickHandler = () =>  props.changeFilter("active")
     const onCompletedClickHandler = () =>  props.changeFilter("completed")
