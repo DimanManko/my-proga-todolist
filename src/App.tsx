@@ -56,6 +56,13 @@ function App() {
         {id: todolistid2, title: "What to buy", filter: "completed"},
     ]);
 
+    let removeTodolist = (todolistId: string) => {
+        let filteredTodolist = todolists.filter(tl => tl.id !== todolistId);
+        setTodoLists(filteredTodolist);
+        delete tasksObj[todolistId];
+        setTasks({...tasksObj})
+    }
+
     let [tasksObj, setTasks] = useState({
         [todolistid1]: [
             {id: v1(), title: "CSS", isDone: true},
@@ -95,6 +102,7 @@ function App() {
                         addTask={addTask}
                         changeTaskStatus={changeStatus}
                         filter={tl.filter}
+                        removeTodolist = {removeTodolist}
                     />
                 })
             }
