@@ -5,6 +5,7 @@ import {v1} from "uuid";
 
 
 export type FilterValuesTupe = "all" | "completed" | "active";
+
 type TodoListType = {
     id: string
     title: string
@@ -13,57 +14,75 @@ type TodoListType = {
 
 
 function App() {
-    let [tasks, setTasks] = useState<Array<TaskType>>([
-        {id: v1(), title: "CSS", isDone: true},
-        {id: v1(), title: "JS", isDone: true},
-        {id: v1(), title: "React", isDone: false},
-        {id: v1(), title: "Redux", isDone: false},
-    ])
 
-    function changeStatus(taskId: string, isDone: boolean) {
+    function removeTask(id: string, todolistId: string) {
+        let tasks = tasksObj[todolistId];
+        let filteredTasks = tasks.filter(t => t.id !== id);
+        tasksObj [todolistId] = filteredTasks;
+        setTasks({...tasksObj});
+    }
+
+    function addTask(title: string, todolistId: string) {
+        let task = {id: v1(), title: title, isDone: false};
+        let tasks = tasksObj[todolistId];
+        let newTasks = [task, ...tasks];
+        tasksObj[todolistId] = newTasks;
+        setTasks({...tasksObj});
+    }
+
+    function changeStatus(taskId: string, isDone: boolean, todolistId: string) {
+        let tasks = tasksObj[todolistId];
         let task = tasks.find(t => t.id === taskId);
         if (task) {
             task.isDone = isDone;
+            setTasks({...tasksObj});
         }
-        setTasks([...tasks]);
     }
 
-    function removeTask(id: string) {
-        let filteredTasks = tasks.filter(t => t.id !== id)
-        setTasks(filteredTasks);
-    }
-
-    function addTask(title: string) {
-        let newTask = {id: v1(), title: title, isDone: false};
-        let newTasks = [newTask, ...tasks];
-        setTasks(newTasks);
-    }
-
-    function changeFilter(value: FilterValuesTupe, todoListId: string) {
-        let todoList = todoLists.find(tl => tl.id === todoListId);
-        if (todoList){
-            todoList.filter = value
-            setTodoLists([...todoLists])
+    function changeFilter(value: FilterValuesTupe, todolistId: string) {
+        let todolist = todolists.find(tl => tl.id === todolistId);
+        if (todolist) {
+            todolist.filter = value
+            setTodoLists([...todolists])
         }
 
     }
 
-    let [todoLists, setTodoLists]= useState<Array<TodoListType>> ([
-        {id: v1(), title: "What to learn", filter: "active"},
-        {id: v1(), title: "What to buy", filter: "completed"},
-    ])
+    let todolistid1 = v1();
+    let todolistid2 = v1();
+
+    let [todolists, setTodoLists] = useState<Array<TodoListType>>([
+        {id: todolistid1, title: "What to learn", filter: "active"},
+        {id: todolistid2, title: "What to buy", filter: "completed"},
+    ]);
+
+    let [tasksObj, setTasks] = useState({
+        [todolistid1]: [
+            {id: v1(), title: "CSS", isDone: true},
+            {id: v1(), title: "JS", isDone: true},
+            {id: v1(), title: "React", isDone: false},
+            {id: v1(), title: "Redux", isDone: false},
+        ],
+        [todolistid2]: [
+            {id: v1(), title: "Bread", isDone: false},
+            {id: v1(), title: "Milk", isDone: true},
+            {id: v1(), title: "Chicken", isDone: false},
+            {id: v1(), title: "Cheese", isDone: false},
+        ]
+    })
 
     return (
         <div className="App">
             {
-                todoLists.map((tl) => {
+                todolists.map((tl) => {
 
-                    let tasksForTodolist = tasks
+                    let tasksForTodolist = tasksObj[tl.id]
+
                     if (tl.filter === "completed") {
-                        tasksForTodolist = tasks.filter(t => t.isDone === true)
+                        tasksForTodolist = tasksForTodolist.filter(t => t.isDone === true)
                     }
                     if (tl.filter === "active") {
-                        tasksForTodolist = tasks.filter(t => t.isDone === false)
+                        tasksForTodolist = tasksForTodolist.filter(t => t.isDone === false)
                     }
 
                     return <Todolist
